@@ -1,0 +1,1 @@
+This is a simple PHP snippet to extract and display a random note from Evenote's ENEX files. Simply upload this script along with your exported notes (i.e. the ENEX files) to a web space and open it in a browser.
