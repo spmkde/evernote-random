@@ -47,6 +47,7 @@ function getRandomNoteFromEnex($filePath) {
     $note = $parsed->note;
     $title = (string)$note->title;
     $content = (string)$note->content;
+    $tags = $note->tag;
 
     // Extract only content inside <en-note>
     if (preg_match('/<en-note[^>]*>(.*?)<\/en-note>/is', $content, $matches)) {
@@ -57,7 +58,8 @@ function getRandomNoteFromEnex($filePath) {
 
     return [
         'title' => $title,
-        'content' => $cleanContent
+        'content' => $cleanContent,
+        'tags' => $tags
     ];
 }
 ?>
@@ -79,6 +81,8 @@ foreach ($files as $file) {
 }
 $r_file = $enex_files[array_rand($enex_files)];
 $note = getRandomNoteFromEnex(__DIR__ . "/" . $r_file);
+
+$scope = isset($_GET['t']) ? $_GET['t'] : $r_file;
 ?>
 
 <!DOCTYPE html>
@@ -134,7 +138,7 @@ $note = getRandomNoteFromEnex(__DIR__ . "/" . $r_file);
 </head>
 <body>
     <div class="container">
-    <h1>Random Evernote Note - <?php echo $r_file ?></h1>
+    <h1>Random Evernote Note - <?php echo $scope ?></h1>
 
     <?php if (is_array($note)): ?>
         <h2><?php echo htmlspecialchars($note['title']); ?></h2>
@@ -145,7 +149,19 @@ $note = getRandomNoteFromEnex(__DIR__ . "/" . $r_file);
         <p style="color:red;"><?php echo htmlspecialchars($note); ?></p>
     <?php endif; ?>
 
+    <p>Tags:
+
+    <ul>
+    <?php foreach ($note['tags'] as $tag) { ?>
+        <div class="note-tag">
+        <li><?php printf("<a href='?t=%s'>%s</a>", urlencode($tag), $tag); ?></li>
+        </div>
+    <?php }; ?>
+    </ul>
+    </p>
+
     <a href="?">Show another note</a>
+
     </div>
 </body>
 </html>
