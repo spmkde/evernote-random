@@ -95,18 +95,19 @@ function get_enex_files() {
 }
 
 $enex_files = get_enex_files();
-$scope = isset($_GET['t']) ? "Tag: " . $_GET['t'] : "File: " . $r_file;
 
-if isset($_GET['t']) {
+if (isset($_GET['t'])) {
     $notes = array();
     foreach ($enex_files as $enex_file) {
         $note = getRandomNoteFromEnex(__DIR__ . "/" . $enex_file, $_GET['t']);
         array_push($notes, $note);
    } 
-   $note = $notes[array_rand($note)];
+   $note = $notes[array_rand($notes)];
+   $scope = "Tag: " . $_GET['t'];
 } else {
     $enex_file = $enex_files[array_rand($enex_files)];
-    $note = getRandomNoteFromEnex(__DIR__ . "/" . $enex_file, $_GET['t']);
+    $note = getRandomNoteFromEnex(__DIR__ . "/" . $enex_file);
+    $scope = "File: " . $enex_file;
 }
 
 ?>
