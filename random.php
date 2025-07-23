@@ -98,7 +98,7 @@ $enex_files = get_enex_files();
 $scope = isset($_GET['t']) ? "Tag: " . $_GET['t'] : "File: " . $r_file;
 
 if isset($_GET['t']) {
-    $notes = array()
+    $notes = array();
     foreach ($enex_files as $enex_file) {
         $note = getRandomNoteFromEnex(__DIR__ . "/" . $enex_file, $_GET['t']);
         array_push($notes, $note);
