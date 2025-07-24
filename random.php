@@ -43,7 +43,7 @@ function getRandomNoteFromEnex($filePath, $tag_scope = NULL) {
     fclose($handle);
 
     if (!$selectedNote) {
-        return "No notes found.";
+        return NULL;
     }
 
     // Wrap the selected note in a root element to parse
@@ -100,7 +100,7 @@ if (isset($_GET['t'])) {
     $notes = array();
     foreach ($enex_files as $enex_file) {
         $note = getRandomNoteFromEnex(__DIR__ . "/" . $enex_file, $_GET['t']);
-        array_push($notes, $note);
+        if ($note !== NULL) { array_push($notes, $note); }
    } 
    $note = $notes[array_rand($notes)];
    $scope = "Tag: " . $_GET['t'];
@@ -165,7 +165,7 @@ if (isset($_GET['t'])) {
 </head>
 <body>
     <div class="container">
-    <h1>Random Evernote Note - <?php echo $scope ?></h1>
+    <h1><a href="?">Random Evernote Note</a> - <?php echo $scope ?></h1>
 
     <?php if (is_array($note)): ?>
         <h2><?php echo htmlspecialchars($note['title']); ?></h2>
