@@ -135,6 +135,12 @@ if (isset($_GET['t'])) {
             margin-top: 0;
             color: #222;
         }
+        hr {
+            color: #222;
+            margin-top: 2em;
+            margin-bottom: 2em;
+            border: 0.5px solid;
+        }
         .note-content {
             background: white;
             border: 1px solid #ddd;
@@ -166,7 +172,7 @@ if (isset($_GET['t'])) {
 <body>
     <div class="container">
     <h1><a href="?">Random Evernote Note</a> - <?php echo $scope ?></h1>
-
+    <hr/>
     <?php if (is_array($note)): ?>
         <h2><?php echo htmlspecialchars($note['title']); ?></h2>
         <div class="note-content">
@@ -176,6 +182,7 @@ if (isset($_GET['t'])) {
         <p style="color:red;"><?php echo htmlspecialchars($note); ?></p>
     <?php endif; ?>
 
+    <hr/>
     <p>Tags:
 
     <ul>
