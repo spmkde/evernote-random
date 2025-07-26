@@ -187,14 +187,17 @@ if (isset($_GET['t'])) {
 
     <ul>
     <?php foreach ($note['tags'] as $tag) { ?>
-        <div class="note-tags">
         <li><?php printf("<a href='?t=%s'>%s</a>", urlencode($tag), $tag); ?></li>
-        </div>
     <?php }; ?>
     </ul>
-    </p>
 
     <a href="?">Show another note</a>
+
+    <hr/>
+
+    <div style="text-align: center; font-size: 0.7em;">
+        <a href="https://github.com/spmkde/evernote-random/">Source code and bug tracker @ github.com</a>
+    </div>
 
     </div>
 </body>
