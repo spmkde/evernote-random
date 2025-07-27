@@ -129,7 +129,7 @@ if (isset($_GET['t'])) {
         h1 {
             font-size: 1.8rem;
             margin-bottom: 1rem;
-            color: #0056b3;
+            color: #01A72D;
         }
         h2 {
             margin-top: 0;
@@ -152,7 +152,7 @@ if (isset($_GET['t'])) {
             display: inline-block;
             margin-top: 1rem;
             text-decoration: none;
-            color: #0056b3;
+            color: #01A72D;
         }
         a:hover {
             text-decoration: underline;
