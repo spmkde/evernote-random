@@ -1,1 +1,3 @@
 This is a simple PHP snippet to extract and display a random note from Evenote's ENEX files. Simply upload this script along with your exported notes (i.e. the ENEX files) to a web space and open it in a browser. Upon each invocation it will randomly select an ENEX file and also randomly select and display one note from this ENEX file. It also allows to filter via tag - in this case it iterates over all possible ENEX files.
+
+The script doesn't support embedded images, documents, or audio files. I don't intend to add this. In case you are looking for it, code additions are more than welcome.
