@@ -1,5 +1,7 @@
 <?php
 
+$time_start = microtime(true);
+
 function getRandomNoteFromEnex($filePath, $tag_scope = NULL) {
     
     $handle = fopen($filePath, 'r');
@@ -84,10 +86,11 @@ if (!function_exists('str_contains')) {
 }
 
 function get_enex_files() {
+    $file_filter = (isset($_GET['f'])) ? $_GET['f'] : "enex";
     $files = scandir(__DIR__);
     $enex_files = array();
     foreach ($files as $file) {
-        if (str_contains($file, "enex")) {
+        if (str_contains($file, $file_filter)) {
             array_push($enex_files, $file);
         }
     }
@@ -104,11 +107,15 @@ if (isset($_GET['t'])) {
    } 
    $note = $notes[array_rand($notes)];
    $scope = "Tag: " . $_GET['t'];
+   $scope_link = "?t=" . urlencode($_GET['t']);
 } else {
-    $enex_file = $enex_files[array_rand($enex_files)];
+    $enex_file = isset($_GET['f']) ? $_GET['f'] : $enex_files[array_rand($enex_files)];
     $note = getRandomNoteFromEnex(__DIR__ . "/" . $enex_file);
     $scope = "File: " . $enex_file;
+    $scope_link = "?f=" . urlencode($enex_file);
 }
+
+$time_elapsed = microtime(true) - $time_start;
 
 ?>
 
@@ -171,7 +178,7 @@ if (isset($_GET['t'])) {
 </head>
 <body>
     <div class="container">
-    <h1><a href="?">Random Evernote Note</a> - <?php echo $scope ?></h1>
+    <h1><a href="?">Random Evernote Note</a> - <?php printf("<a href='%s'>%s</a>", $scope_link, $scope); ?></h1>
     <hr/>
     <?php if (is_array($note)): ?>
         <h2><?php echo htmlspecialchars($note['title']); ?></h2>
@@ -194,6 +201,10 @@ if (isset($_GET['t'])) {
     <a href="?">Show another note</a>
 
     <hr/>
+
+    <div style="text-align: center; font-size: 0.7em;">
+        <?php echo date(DATE_RFC822); echo " Execution time: " . round($time_elapsed, 4) . " seconds"; ?>
+    </div>
 
     <div style="text-align: center; font-size: 0.7em;">
         <a href="https://github.com/spmkde/evernote-random/">Source code and bug tracker @ github.com</a>
