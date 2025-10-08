@@ -1,8 +1,16 @@
 <?php
 
+# TODO
+# - Move nr_tags_found to tag list
+
 $time_start = microtime(true);
+$notes_scanned = 0;
+$nr_tags_found = NULL;
 
 function getRandomNoteFromEnex($filePath, $tag_scope = NULL) {
+
+    global $notes_scanned;
+    global $nr_tags_found;
     
     $handle = fopen($filePath, 'r');
     if (!$handle) {
@@ -17,6 +25,7 @@ function getRandomNoteFromEnex($filePath, $tag_scope = NULL) {
     while (($line = fgets($handle)) !== false) {
         if (strpos($line, '<note>') !== false) {
             $inNote = true;
+            $notes_scanned++;
             $noteBuffer = $line;
             $tag_found = ($tag_scope == NULL) ? TRUE : FALSE;
         } elseif ($inNote) {
@@ -24,6 +33,7 @@ function getRandomNoteFromEnex($filePath, $tag_scope = NULL) {
             if (preg_match('/<tag[^>]*>(.*?)<\/tag>/is', $line, $matches)) {
                if ($matches[1] == "$tag_scope") {
                     $tag_found = TRUE;
+                    $nr_tags_found++;
                }
             }
 
@@ -178,7 +188,10 @@ $time_elapsed = microtime(true) - $time_start;
 </head>
 <body>
     <div class="container">
-    <h1><a href="?">Random Evernote Note</a> - <?php printf("<a href='%s'>%s</a>", $scope_link, $scope); ?></h1>
+    <h1><a href="?">Random Evernote Note</a> - <?php
+        printf("<a href='%s'>%s</a>", $scope_link, $scope);
+        if ($nr_tags_found !== NULL) { echo " (1 / $nr_tags_found)"; }
+    ?></h1>
     <hr/>
     <?php if (is_array($note)): ?>
         <h2><?php echo htmlspecialchars($note['title']); ?></h2>
@@ -203,7 +216,11 @@ $time_elapsed = microtime(true) - $time_start;
     <hr/>
 
     <div style="text-align: center; font-size: 0.7em;">
-        <?php echo date(DATE_RFC822); echo " Execution time: " . round($time_elapsed, 4) . " seconds"; ?>
+        <?php
+            echo date(DATE_RFC822);
+            echo " Notes scanned: " . $notes_scanned;
+            echo " Execution time: " . round($time_elapsed, 4) . " seconds";
+        ?>
     </div>
 
     <div style="text-align: center; font-size: 0.7em;">
