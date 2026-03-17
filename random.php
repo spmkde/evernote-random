@@ -118,6 +118,13 @@ if (isset($_GET['t'])) {
    $note = $notes[array_rand($notes)];
    $scope = "Tag: " . $_GET['t'];
    $scope_link = "?t=" . urlencode($_GET['t']);
+} elseif (isset($_GET['q'])) {
+   $notes = array();
+    foreach ($enex_files as $enex_file) {
+        $note = getRandomNoteFromEnex(__DIR__ . "/" . $enex_file, $_GET['t']);
+        if ($note !== NULL) { array_push($notes, $note); }
+   }
+
 } else {
     $enex_file = isset($_GET['f']) ? $_GET['f'] : $enex_files[array_rand($enex_files)];
     $note = getRandomNoteFromEnex(__DIR__ . "/" . $enex_file);
@@ -135,10 +142,9 @@ $time_elapsed = microtime(true) - $time_start;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Random Evernote Note</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: sans-serif;
             background-color: #fafafa;
             margin: 2rem;
             color: #333;
@@ -214,6 +220,18 @@ $time_elapsed = microtime(true) - $time_start;
     <a href="?">Show another note</a>
 
     <hr/>
+
+    <div style="text-align: center">
+        
+            
+        <form action="random.php" method="GET">
+            <label for="search">Search notes for a string:</label>
+            <input type="text" id="search" name="q" required>
+            <button type="submit">Search</button>
+        </form>
+    </div>
+    
+        <hr/>
 
     <div style="text-align: center; font-size: 0.7em;">
         <?php
