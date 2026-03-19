@@ -7,6 +7,7 @@ $time_start = microtime(true);
 $notes_scanned = 0;
 $nr_tags_found = NULL;
 
+
 function getRandomNoteFromEnex($filePath, $tag_scope = NULL) {
 
     global $notes_scanned;
@@ -138,13 +139,14 @@ $time_elapsed = microtime(true) - $time_start;
 
 <!DOCTYPE html>
 <html lang="en">
-    
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Random Evernote Note</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <div class="container">
     <h1><a href="?">Random Evernote Note</a> - <?php
@@ -170,18 +172,17 @@ $time_elapsed = microtime(true) - $time_start;
     <?php }; ?>
     </ul>
 
-    <a href="?">Show another note</a>
 
     <hr/>
 
-    <div style="text-align: center">
-        
-            
+    <div style="text-align: center">            
         <form action="random.php" method="GET">
-            <label for="search">Search notes for a string:</label>
             <input type="text" id="search" name="q" required>
             <button type="submit">Search</button>
         </form>
+        <br/>
+        <button onclick="window.location.href = 'add.php';">Add a note.</button>
+
     </div>
     
         <hr/>
