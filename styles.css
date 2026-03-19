@@ -1,0 +1,47 @@
+        body {
+            font-family: sans-serif;
+            background-color: #fafafa;
+            margin: 2rem;
+            color: #333;
+        }
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #01A72D;
+        }
+        h2 {
+            margin-top: 0;
+            color: #222;
+        }
+        hr {
+            color: #222;
+            margin-top: 2em;
+            margin-bottom: 2em;
+            border: 0.5px solid;
+        }
+        .note-content {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 1rem;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        a {
+            display: inline-block;
+            margin-top: 1rem;
+            text-decoration: none;
+            color: #01A72D;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            body: font-size: 4rem;
+        }
+
+        .container { 
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
