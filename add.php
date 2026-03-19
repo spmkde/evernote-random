@@ -1,11 +1,5 @@
 <?php
 
-# TODO
-# - Move nr_tags_found to tag list
-
-# $time_start = microtime(true);
-
-
 if (!function_exists('str_contains')) {
     function str_contains($haystack, $needle) {
         return $needle !== '' && mb_strpos($haystack, $needle) !== false;
@@ -26,19 +20,11 @@ function get_enex_files() {
 
 $enex_files = get_enex_files();
 
-/**
- * Add a note to an Evernote ENEX file
- */
-
-function addNoteToENEX($enexFile, $title, $content, $created = null, $updated = null) {
-    //echo "Called add  with $enexFile, $title, $content, $created, $updated";
+function addNoteToENEX($enexFile, $title, $content) {
+ 
     // Default timestamps if not provided
-    if ($created === null) {
-        $created = gmdate('Ymd\THis\Z');
-    }
-    if ($updated === null) {
-        $updated = gmdate('Ymd\THis\Z');
-    }
+    $created = gmdate('Ymd\THis\Z');
+    $updated = gmdate('Ymd\THis\Z');
     
     // Create the note XML structure
     $noteXml = <<<XML
@@ -89,24 +75,16 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
     $success = addNoteToENEX(
         $enex_path,
         substr($note_text, 0, 50),
-        "<div>$note_text</div>",
-        gmdate('Ymd\THis\Z'),
-        gmdate('Ymd\THis\Z')
+        "<div>$note_text</div>"
     );
-    
-    //echo "AFTER ADD";
 
     // Basic validation
     if (empty($note_text)) {
         echo "Error: Textarea cannot be empty.";
     } else {
         // Sanitize output to prevent XSS
-        $safe_text = htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
+        $safe_text = htmlspecialchars($note_text, ENT_QUOTES, 'UTF-8');
     }
-    
-    appendNoteToEnexFile($enex_path, substr($note_text, 0, 50), $note_text);
-    //appendNoteToEnexFile($enex_path, "note_text", "note_text");
-
 }
 ?>
 
