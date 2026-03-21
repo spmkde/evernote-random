@@ -94,55 +94,8 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Random Evernote Note</title>
+    <link rel="stylesheet" href="styles.css" />
     <style>
-        body {
-            font-family: sans-serif;
-            background-color: #fafafa;
-            margin: 2rem;
-            color: #333;
-        }
-        h1 {
-            font-size: 1.8rem;
-            margin-bottom: 1rem;
-            color: #01A72D;
-        }
-        h2 {
-            margin-top: 0;
-            color: #222;
-        }
-        hr {
-            color: #222;
-            margin-top: 2em;
-            margin-bottom: 2em;
-            border: 0.5px solid;
-        }
-        .note-content {
-            background: white;
-            border: 1px solid #ddd;
-            padding: 1rem;
-            border-radius: 6px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        a {
-            display: inline-block;
-            margin-top: 1rem;
-            text-decoration: none;
-            color: #01A72D;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-
-        @media (max-width: 600px) {
-            body: font-size: 4rem;
-        }
-
-        .container { 
-            max-width: 700px;
-            margin: 0 auto;
-            padding: 1rem;
-         }
-
          textarea {
             border:1px solid #999999;
             width:90%;
@@ -159,9 +112,15 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
 </head>
 <body>
     <div class="container" style="text-align: center">
-        <h1><a href="random.php">Random Evernote Note</a> - Add a note</h1>
+        <h1><a href="random.php">Random Evernote Note</a> - <a href="add.php">Add a note</a></h1>
     <hr/>
-    
+
+    <?php if ($success) { ?>
+
+    Note successfully saved!
+
+    <?php } else { ?>
+
     <form action="add.php" method="POST">
         <textarea id="note" name="note"></textarea></br> 
         <select name="file" id="file">
@@ -169,8 +128,10 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
                 printf("<option value='%s'>%s</option>", $enex_file, $enex_file);
             } ?>
         <input type="submit" value="Add note">
-    </select>
+        </select>
     </form>
+
+    <?php } ?>
 
     <hr/>
 
