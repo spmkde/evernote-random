@@ -4,13 +4,13 @@
 # - Move nr_tags_found to tag list
 
 $time_start = microtime(true);
-$notes_scanned = 0;
+$nr_notes_scanned = 0;
 $nr_tags_found = NULL;
 
 
 function getRandomNoteFromEnex($filePath, $tag_scope = NULL) {
 
-    global $notes_scanned;
+    global $nr_notes_scanned;
     global $nr_tags_found;
     
     $handle = fopen($filePath, 'r');
@@ -26,7 +26,7 @@ function getRandomNoteFromEnex($filePath, $tag_scope = NULL) {
     while (($line = fgets($handle)) !== false) {
         if (strpos($line, '<note>') !== false) {
             $inNote = true;
-            $notes_scanned++;
+            $nr_notes_scanned++;
             $noteBuffer = $line;
             $tag_found = ($tag_scope == NULL) ? TRUE : FALSE;
         } elseif ($inNote) {
