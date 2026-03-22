@@ -7,7 +7,9 @@ $time_start = microtime(true);
 $nr_notes_scanned = 0;
 $nr_tags_found = NULL;
 
-
+//
+// $tag_scope doesn't matter right now
+//
 function getRandomNoteFromEnex($filePath, $tag_scope = NULL) {
 
     global $nr_notes_scanned;
@@ -23,12 +25,33 @@ function getRandomNoteFromEnex($filePath, $tag_scope = NULL) {
     $noteCount = 0;
     $selectedNote = '';
 
+// Example XML document to show what is being parsed
+//     <note>
+//    <title>Gott, ich sehe nur bis zu meiner Nasenspitze, aber ich vertraue dir, denn du siehst alles</title>
+//    <created>20251109T212539Z</created>
+//    <updated>20251109T212609Z</updated>
+//    <tag>Autor: Joyce Meyer</tag>
+//    <tag>challenges</tag>
+//    <note-attributes>
+//      <author>Sebastian Kayser</author>
+//    </note-attributes>
+//    <content>
+//      <![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+// <!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd"><en-note><div style="display:none;--en-chs:&quot;eyQ==&quot;"> </div><div>Gott, ich sehe nur bis zu meiner Nasenspitze, aber ich vertraue dir, denn du siehst alles. Ich vertraue darauf, dass du aus meinen schweren Zeiten etwas Gutes machen wirst. Amen</div></en-note>      ]]>
+//    </content>
+//  </note>
+
+    
     while (($line = fgets($handle)) !== false) {
+
+        // Entering <note>
         if (strpos($line, '<note>') !== false) {
             $inNote = true;
             $nr_notes_scanned++;
             $noteBuffer = $line;
             $tag_found = ($tag_scope == NULL) ? TRUE : FALSE;
+
+          // Inside <note>
         } elseif ($inNote) {
 
             if (preg_match('/<tag[^>]*>(.*?)<\/tag>/is', $line, $matches)) {
