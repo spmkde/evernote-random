@@ -115,9 +115,13 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
         <h1><a href="random.php">Random Evernote Note</a> - <a href="add.php">Add a note</a></h1>
     <hr/>
 
-    <?php if ($success) { ?>
+    <?php if ($success) { 
+        echo "Note successfully saved to <b>$enex_path</b>!";   
+    ?>
 
-    Note successfully saved!
+    <br/><br/>
+    <button onclick="window.location.href = 'add.php';">Add another note.</button>
+
 
     <?php } else { ?>
 
