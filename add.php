@@ -66,13 +66,13 @@ XML;
     return false;
 }
 
+$post_success = FALSE;
 if ($_SERVER["REQUEST_METHOD"] === 'POST') {
     
     $enex_path = isset($_POST['file']) ? trim($_POST['file']) : NULL;
     $note_text = isset($_POST['note']) ? trim($_POST['note']) : NULL;
         
-
-    $success = addNoteToENEX(
+    $post_success = addNoteToENEX(
         $enex_path,
         substr($note_text, 0, 50),
         "<div>$note_text</div>"
@@ -115,7 +115,7 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
         <h1><a href="random.php">Random Evernote Note</a> - <a href="add.php">Add a note</a></h1>
     <hr/>
 
-    <?php if ($success) { 
+    <?php if ($post_success) { 
         echo "Note successfully saved to <b>$enex_path</b>!";   
     ?>
 

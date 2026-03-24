@@ -36,10 +36,6 @@ function getRandomNoteFromEnex($filePath, $tag_scope = NULL) {
 //      <author>Sebastian Kayser</author>
 //    </note-attributes>
 //    <content>
-//      <![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-// <!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd"><en-note><div style="display:none;--en-chs:&quot;eyQ==&quot;"> </div><div>Gott, ich sehe nur bis zu meiner Nasenspitze, aber ich vertraue dir, denn du siehst alles. Ich vertraue darauf, dass du aus meinen schweren Zeiten etwas Gutes machen wirst. Amen</div></en-note>      ]]>
-//    </content>
-//  </note>
 
     
     while (($line = fgets($handle)) !== false) {
@@ -124,6 +120,7 @@ function get_enex_files() {
     $files = scandir(__DIR__);
     $enex_files = array();
     foreach ($files as $file) {
+        if ($file == "sandbox.enex") { continue; }
         if (str_contains($file, $file_filter)) {
             array_push($enex_files, $file);
         }
