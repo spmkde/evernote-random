@@ -210,7 +210,7 @@ $time_elapsed = microtime(true) - $time_start;
     <div style="text-align: center; font-size: 0.7em;">
         <?php
             echo date(DATE_RFC822);
-            echo " Notes scanned: " . $notes_scanned;
+            echo " Notes scanned: " . $nr_notes_scanned;
             echo " Execution time: " . round($time_elapsed, 4) . " seconds";
         ?>
     </div>

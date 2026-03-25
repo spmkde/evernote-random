@@ -20,7 +20,7 @@ function get_enex_files() {
 
 $enex_files = get_enex_files();
 
-function addNoteToENEX($enexFile, $title, $content) {
+function addNoteToENEX($enexFile, $title, $content, $tags = NULL) {
  
     // Default timestamps if not provided
     $created = gmdate('Ymd\THis\Z');
@@ -34,6 +34,15 @@ function addNoteToENEX($enexFile, $title, $content) {
     <updated>{$updated}</updated>
     <note-attributes>
     </note-attributes>
+    
+XML;
+
+    foreach ($tags as $tag) {
+        $noteXml .= "<tag>$tag</tag>\n";
+    }
+
+    $noteXml .= <<<XML
+
     <content><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">
 <en-note>{$content}</en-note>
@@ -71,11 +80,16 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
     
     $enex_path = isset($_POST['file']) ? trim($_POST['file']) : NULL;
     $note_text = isset($_POST['note']) ? trim($_POST['note']) : NULL;
-        
+    $note_tags = isset($_POST['tags']) ? trim($_POST['tags']) : NULL;
+
+    $note_tags = explode(",", $note_tags);
+
+    
     $post_success = addNoteToENEX(
         $enex_path,
         substr($note_text, 0, 50),
-        "<div>$note_text</div>"
+        "<div>$note_text</div>",
+        $note_tags
     );
 
     // Basic validation
@@ -126,10 +140,11 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
     <?php } else { ?>
 
     <form action="add.php" method="POST">
-        <textarea id="note" name="note"></textarea></br> 
+        <textarea id="note" name="note"></textarea><br/>
+        Add tags (CSV)<input type="text" name="tags" id="tags"><br/> 
         <select name="file" id="file">
             <?php foreach ($enex_files as $enex_file) {
-                printf("<option value='%s'>%s</option>", $enex_file, $enex_file);
+                printf("<option value='%s'>%s</option>\n", $enex_file, $enex_file);
             } ?>
         <input type="submit" value="Add note">
         </select>
