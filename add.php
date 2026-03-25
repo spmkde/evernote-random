@@ -34,7 +34,7 @@ function addNoteToENEX($enexFile, $title, $content, $tags = NULL) {
     <updated>{$updated}</updated>
     <note-attributes>
     </note-attributes>
-    
+
 XML;
 
     foreach ($tags as $tag) {
@@ -139,15 +139,17 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
 
     <?php } else { ?>
 
-    <form action="add.php" method="POST">
+    <form action="add.php" method="POST" id="newnote">
         <textarea id="note" name="note"></textarea><br/>
-        Add tags (CSV)<input type="text" name="tags" id="tags"><br/> 
+        Notebook: 
         <select name="file" id="file">
             <?php foreach ($enex_files as $enex_file) {
                 printf("<option value='%s'>%s</option>\n", $enex_file, $enex_file);
             } ?>
-        <input type="submit" value="Add note">
         </select>
+        <br/>
+        Add tags:<input type="text" name="tags" id="tags"><br/> 
+        <input type="submit" value="Add note">
     </form>
 
     <?php } ?>
