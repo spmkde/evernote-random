@@ -1,16 +1,19 @@
-on: push
-name: 🚀 Deploy website on push
+on:
+  push:
+    branches:
+      - main
+name: Deploy website on push
 jobs:
   web-deploy:
-    name: 🎉 Deploy
+    name: Deploy
     runs-on: ubuntu-latest
     steps:
-    - name: 🚚 Get latest code
+    - name: Get latest code
       uses: actions/checkout@v4
-    
-    - name: 📂 Sync files
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+
+    - name: Push files
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
         server: skayser.de
         username: skayser-de
-        password: ${{ secrets.ftp_password }}
+        password: ${{ secrets.FTP_PASSWORD }}
