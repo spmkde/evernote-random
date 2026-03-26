@@ -1,6 +1,6 @@
 <?php
 
-# test
+# test test test
 
 $time_start = microtime(true);
 $nr_notes_scanned = 0;
