@@ -1,8 +1,5 @@
 <?php
 
-# TODO
-# - Move nr_tags_found to tag list
-
 $time_start = microtime(true);
 $nr_notes_scanned = 0;
 $nr_tags_found = NULL;
