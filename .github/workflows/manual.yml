@@ -17,3 +17,4 @@ jobs:
         server: skayser.de
         username: skayser-de
         password: ${{ secrets.FTP_PASSWORD }}
+        log-level: verbose
