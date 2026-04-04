@@ -84,14 +84,18 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
     $note_text = isset($_POST['note']) ? trim($_POST['note']) : NULL;
     $note_tags = isset($_POST['tags']) ? trim($_POST['tags']) : NULL;
 
-    $note_tags = explode(",", $note_tags);
-
+    if ($note_tags) {
+        $note_tags = array_map("trim", explode(",", $note_tags));
+        $note_tags_clean = array_map("htmlspecialchars", $note_tags);
+    } else {
+        $note_tags_clean = NULL;
+    }
     
     $post_success = addNoteToENEX(
         $enex_path,
         substr($note_text, 0, 50),
         "<div>$note_text</div>",
-        $note_tags
+        $note_tags_clean
     );
 
     // Basic validation
