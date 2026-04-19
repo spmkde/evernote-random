@@ -9,10 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Get latest code
-      uses: actions/checkout
+      uses: actions/checkout@v4
 
     - name: Push files
-      uses: SamKirkland/FTP-Deploy-Action
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
         server: skayser.de
         username: skayser-de
