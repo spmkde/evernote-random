@@ -195,8 +195,8 @@ $time_elapsed = microtime(true) - $time_start;
     <hr/>
 
     <div style="text-align: center">            
-        <form action="random.php" method="GET">
-            <input type="text" id="search" name="q" required>
+        <form action="search.php" method="GET">
+            <input type="text" id="search" name="s" required>
             <button type="submit">Search</button>
         </form>
         <br/>
