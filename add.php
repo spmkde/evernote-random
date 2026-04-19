@@ -93,7 +93,7 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
     
     $post_success = addNoteToENEX(
         $enex_path,
-        substr($note_text, 0, 50),
+        substr($note_text, 0, 100),
         "<div>$note_text</div>",
         $note_tags_clean
     );
