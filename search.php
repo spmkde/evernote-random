@@ -42,7 +42,6 @@ function searchEnexFile($enexPath, $searchTerm) {
 </head>
 <body>
     <div class="container">
-
 <?php
 
 if (!isset($_GET['s'])) {
@@ -55,7 +54,9 @@ try {
     $matches = searchEnexFile('Quotes.enex', $_GET['s']);
     
     echo '<div style="text-align: center">';
+    echo '<h1><a href="random.php">Random Evernote Note</a> </h1>';
     
+
     echo "<h2>Found " . count($matches) . " matches</h2>";
     echo "</div>";
     

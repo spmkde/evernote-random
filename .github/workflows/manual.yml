@@ -15,6 +15,7 @@ jobs:
       uses: SamKirkland/FTP-Deploy-Action@v4.3.4
       with:
         server: skayser.de
+        server-dir: en/
         username: skayser-de
         password: ${{ secrets.FTP_PASSWORD }}
         log-level: verbose
