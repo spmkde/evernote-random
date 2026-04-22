@@ -57,7 +57,7 @@ try {
     echo '<h1><a href="random.php">Random Evernote Note</a> </h1>';
     
 
-    echo "<h2>Found " . count($matches) . " matches</h2>";
+    echo "<h2>Found " . count($matches) . " matches for $_GET['s']</h2>";
     echo "</div>";
     
     foreach ($matches as $match) {
