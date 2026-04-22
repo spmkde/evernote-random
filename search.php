@@ -64,6 +64,7 @@ try {
         echo "<div class='note-content'>";
         echo "{$match['title']}<br/><br/>\n";
         echo "</div>";
+        echo "<br/>";
 
     }
     echo "<br/><br/>";
