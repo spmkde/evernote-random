@@ -21,6 +21,7 @@ function searchEnexFile($enexPath, $searchTerm) {
         if (stripos($noteContent, $searchTerm) !== false) {
             $results[] = [
                 'title' => (string)$note->title,
+                'content' => (string)$note->{'content'},
                 'created' => (string)$note->{'created'},
                 'updated' => (string)$note->{'updated'},
                 'match_position' => stripos($noteContent, $searchTerm)
@@ -54,20 +55,30 @@ try {
     $matches = searchEnexFile('Quotes.enex', $_GET['s']);
     
     echo '<div style="text-align: center">';
-    echo '<h1><a href="random.php">Random Evernote Note</a> </h1>';
+    echo '<h1><a href="random.php">Random Evernote Note</a> </h1><br/><hr/>';
     
 
-    echo "<h2>Found " . count($matches) . " matches for $_GET['s']</h2>";
-    echo "</div>";
+    echo "<h2>Found " . count($matches) . " matches for '" . $_GET['s'] . "'</h2>";
+
+         echo '<form action="search.php" method="GET">';
+         echo '<input type="text" id="search" name="s" required> ';
+         echo '<button type="submit">Search again</button>';
+         echo '</form>';
+
+         echo '<hr/>';
+
+             echo "</div>";
+
     
+    echo "<div class='accordion'>";
     foreach ($matches as $match) {
+        echo "<div class='note-header'><h3>{$match['title']}</h3></div>";
         echo "<div class='note-content'>";
-        echo "{$match['title']}<br/><br/>\n";
+        echo trim($match['content']);
         echo "</div>";
         echo "<br/>";
-
     }
-    echo "<br/><br/>";
+    echo "</div><br/><br/>";
 } catch (Exception $e) {
     echo "Error: " . $e->getMessage();
 }
