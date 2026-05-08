@@ -4,7 +4,7 @@ $time_start = microtime(true);
 $nr_notes_scanned = 0;
 $nr_tags_found = NULL;
 
-$DAILY_QUOTA = OFF; // Set to a positive integer to enable daily request quota, or OFF to disable.
+$DAILY_QUOTA = FALSE; // Set to a positive integer to enable daily request quota, or OFF to disable.
 $quota_cookie_name = 'daily_request_quota';
 $today = gmdate('Y-m-d');
 $quota_data = ['date' => $today, 'count' => 0];
@@ -117,6 +117,7 @@ function getRandomNoteFromEnex($filePath, $tag_scope = NULL) {
     }
 
     $note = $parsed->note;
+    $id = (string)$note['id'];
     $title = (string)$note->title;
     $content = (string)$note->content;
     $tags = $note->tag;
@@ -129,10 +130,72 @@ function getRandomNoteFromEnex($filePath, $tag_scope = NULL) {
     }
 
     return [
+        'id' => $id,
         'title' => $title,
         'content' => $cleanContent,
         'tags' => $tags
     ];
+}
+
+function getNoteById($noteId) {
+    global $enex_files;
+    foreach ($enex_files as $enex_file) {
+        $note = getNoteFromEnexById(__DIR__ . "/" . $enex_file, $noteId);
+        if ($note !== NULL) return $note;
+    }
+    return "Note not found.";
+}
+
+function getNoteFromEnexById($filePath, $noteId) {
+    $handle = fopen($filePath, 'r');
+    if (!$handle) {
+        return "Could not open file.";
+    }
+
+    $inNote = false;
+    $noteBuffer = '';
+    while (($line = fgets($handle)) !== false) {
+        if (strpos($line, '<note id=') !== false) {
+            if (preg_match('/<note id="([^"]+)"/', $line, $matches)) {
+                $currentId = $matches[1];
+                if ($currentId == $noteId) {
+                    $inNote = true;
+                    $noteBuffer = $line;
+                }
+            }
+        } elseif ($inNote) {
+            $noteBuffer .= $line;
+            if (strpos($line, '</note>') !== false) {
+                $inNote = false;
+                // parse it
+                $wrappedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root>$noteBuffer</root>";
+                libxml_use_internal_errors(true);
+                $parsed = simplexml_load_string($wrappedXml);
+                if (!$parsed || !isset($parsed->note)) {
+                    return "Failed to parse selected note.";
+                }
+                $note = $parsed->note;
+                $id = (string)$note['id'];
+                $title = (string)$note->title;
+                $content = (string)$note->content;
+                $tags = $note->tag;
+                if (preg_match('/<en-note[^>]*>(.*?)<\/en-note>/is', $content, $matches)) {
+                    $cleanContent = $matches[1];
+                } else {
+                    $cleanContent = htmlspecialchars($content);
+                }
+                fclose($handle);
+                return [
+                    'id' => $id,
+                    'title' => $title,
+                    'content' => $cleanContent,
+                    'tags' => $tags
+                ];
+            }
+        }
+    }
+    fclose($handle);
+    return NULL;
 }
 ?>
 
@@ -159,10 +222,14 @@ function get_enex_files() {
 
 $enex_files = get_enex_files();
 
-if ($DAILY_QUOTA &&$isQuotaExceeded) {
+if ($DAILY_QUOTA && $isQuotaExceeded) {
     $note = "Daily request quota exceeded. Please try again tomorrow.";
     $scope = "Quota exceeded";
     $scope_link = "?";
+} elseif (isset($_GET['id'])) {
+    $note = getNoteById($_GET['id']);
+    $scope = "Note by ID ";
+    $scope_link = "?id=" . urlencode($_GET['id']);
 } elseif (isset($_GET['t'])) {
     $notes = array();
     foreach ($enex_files as $enex_file) {
@@ -212,6 +279,7 @@ $time_elapsed = microtime(true) - $time_start;
         <div class="note-content">
             <?php echo $note['content']; ?>
         </div>
+        <p><a href="?id=<?php echo urlencode($note['id']); ?>">Direct link to this note</a></p>
     <?php else: ?>
         <p style="color:red;"><?php echo htmlspecialchars($note); ?></p>
     <?php endif; ?>
