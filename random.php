@@ -4,7 +4,7 @@ $time_start = microtime(true);
 $nr_notes_scanned = 0;
 $nr_tags_found = NULL;
 
-$DAILY_QUOTA = FALSE; // Set to a positive integer to enable daily request quota, or OFF to disable.
+$DAILY_QUOTA = FALSE; // Set to a positive integer to enable daily request quota, or FALSE to disable.
 $quota_cookie_name = 'daily_request_quota';
 $today = gmdate('Y-m-d');
 $quota_data = ['date' => $today, 'count' => 0];
