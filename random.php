@@ -1,10 +1,40 @@
 <?php
 
-# test test test
-
 $time_start = microtime(true);
 $nr_notes_scanned = 0;
 $nr_tags_found = NULL;
+
+$DAILY_QUOTA = OFF; // Set to a positive integer to enable daily request quota, or OFF to disable.
+$quota_cookie_name = 'daily_request_quota';
+$today = gmdate('Y-m-d');
+$quota_data = ['date' => $today, 'count' => 0];
+
+if (isset($_COOKIE[$quota_cookie_name])) {
+    $cookie_value = $_COOKIE[$quota_cookie_name];
+    $decoded = json_decode($cookie_value, true);
+    if (is_array($decoded) && isset($decoded['date'], $decoded['count'])) {
+        $quota_data = [
+            'date' => is_string($decoded['date']) ? $decoded['date'] : $today,
+            'count' => is_int($decoded['count']) ? $decoded['count'] : intval($decoded['count'])
+        ];
+    }
+}
+
+if ($quota_data['date'] !== $today) {
+    $quota_data['date'] = $today;
+    $quota_data['count'] = 0;
+}
+
+$isQuotaExceeded = ($quota_data['count'] >= $DAILY_QUOTA);
+if (!$isQuotaExceeded) {
+    $quota_data['count']++;
+}
+
+$cookie_expires = strtotime('tomorrow 00:00');
+if ($cookie_expires === false) {
+    $cookie_expires = time() + 86400;
+}
+setcookie($quota_cookie_name, json_encode($quota_data), $cookie_expires, '/');
 
 //
 // $tag_scope doesn't matter right now
@@ -40,7 +70,7 @@ function getRandomNoteFromEnex($filePath, $tag_scope = NULL) {
     while (($line = fgets($handle)) !== false) {
 
         // Entering <note>
-        if (strpos($line, '<note>') !== false) {
+        if (strpos($line, '<note id=') !== false) {
             $inNote = true;
             $nr_notes_scanned++;
             $noteBuffer = $line;
@@ -129,15 +159,19 @@ function get_enex_files() {
 
 $enex_files = get_enex_files();
 
-if (isset($_GET['t'])) {
+if ($DAILY_QUOTA &&$isQuotaExceeded) {
+    $note = "Daily request quota exceeded. Please try again tomorrow.";
+    $scope = "Quota exceeded";
+    $scope_link = "?";
+} elseif (isset($_GET['t'])) {
     $notes = array();
     foreach ($enex_files as $enex_file) {
         $note = getRandomNoteFromEnex(__DIR__ . "/" . $enex_file, $_GET['t']);
         if ($note !== NULL) { array_push($notes, $note); }
-   } 
-   $note = $notes[array_rand($notes)];
-   $scope = "Tag: " . $_GET['t'];
-   $scope_link = "?t=" . urlencode($_GET['t']);
+    }
+    $note = $notes[array_rand($notes)];
+    $scope = "Tag: " . $_GET['t'];
+    $scope_link = "?t=" . urlencode($_GET['t']);
 } elseif (isset($_GET['q'])) {
    $notes = array();
     foreach ($enex_files as $enex_file) {
@@ -183,14 +217,14 @@ $time_elapsed = microtime(true) - $time_start;
     <?php endif; ?>
 
     <hr/>
-    <p>Tags:
-
-    <ul>
-    <?php foreach ($note['tags'] as $tag) { ?>
-        <li><?php printf("<a href='?t=%s'>%s</a>", urlencode($tag), $tag); ?></li>
-    <?php }; ?>
-    </ul>
-
+    <?php if (is_array($note)): ?>
+        <p>Tags:</p>
+        <ul>
+        <?php foreach ($note['tags'] as $tag) { ?>
+            <li><?php printf("<a href='?t=%s'>%s</a>", urlencode($tag), $tag); ?></li>
+        <?php }; ?>
+        </ul>
+    <?php endif; ?>
 
     <hr/>
 
@@ -211,6 +245,14 @@ $time_elapsed = microtime(true) - $time_start;
             echo date(DATE_RFC822);
             echo " Notes scanned: " . $nr_notes_scanned;
             echo " Execution time: " . round($time_elapsed, 4) . " seconds";
+            echo "<br/><br/>";
+            if ($DAILY_QUOTA) {
+                if ($isQuotaExceeded) {
+                    echo "<span style='color:red;'>Daily request quota exceeded. Please try again tomorrow.</span><br/>";
+                } else {
+                    echo "<span style='color:green;'>You have " . ($DAILY_QUOTA - $quota_data['count']) . " requests left for today.</span><br/>";
+                }
+            }
         ?>
     </div>
 
