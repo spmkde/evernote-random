@@ -1,26 +1,11 @@
 <?php
 
-/**
- * PHP script to add a unique UUID v4 ID to each <note> element in an Evernote ENEX file.
- * 
- * Usage: php add_unique_id_to_notes.php input.enex output.enex
- * 
- * This script parses the ENEX XML file, generates a unique ID for each note,
- * adds it as an 'id' attribute to the <note> element, and saves the modified file.
- */
-
-
 function get_enex_files() {
-    $file_filter = (isset($_GET['f'])) ? $_GET['f'] : "enex";
-    $files = scandir(__DIR__);
-    $enex_files = array();
-    foreach ($files as $file) {
-        if ($file == "sandbox.enex") { continue; }
-        if (str_contains($file, $file_filter)) {
-            array_push($enex_files, $file);
-        }
-    }
-    return $enex_files;
+    // Get all files from current directory ending in .enex
+    $enex_files = glob('*.enex');
+    
+    // Return empty array if no files found
+    return $enex_files !== false ? $enex_files : [];
 }
 
 $enex_files = get_enex_files();
