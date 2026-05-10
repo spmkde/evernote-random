@@ -20,6 +20,7 @@ function searchEnexFile($enexPath, $searchTerm) {
         // Case-insensitive search
         if (stripos($noteContent, $searchTerm) !== false) {
             $results[] = [
+                'id' => (string)$note['id'],
                 'title' => (string)$note->title,
                 'content' => (string)$note->{'content'},
                 'created' => (string)$note->{'created'},
@@ -75,6 +76,7 @@ try {
         echo "<div class='note-header'><h3>{$match['title']}</h3></div>";
         echo "<div class='note-content'>";
         echo trim($match['content']);
+        echo "<a href='random.php?id=" . urlencode($match['id']) . "'>Direct link to this note</a>";        
         echo "</div>";
         echo "<br/>";
     }
