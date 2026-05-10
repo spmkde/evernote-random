@@ -111,20 +111,29 @@ function getRandomNoteFromEnex($filePath, $tag_scope = NULL) {
         return NULL;
     }
 
-    // Wrap the selected note in a root element to parse
-    $wrappedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root>$selectedNote</root>";
-    libxml_use_internal_errors(true);
-    $parsed = simplexml_load_string($wrappedXml);
-
-    if (!$parsed || !isset($parsed->note)) {
+    // Parse the selected note using regex
+    if (!preg_match('/<note id="([^"]+)"/', $selectedNote, $idMatch)) {
         return "Failed to parse selected note.";
     }
+    $id = $idMatch[1];
 
-    $note = $parsed->note;
-    $id = (string)$note['id'];
-    $title = (string)$note->title;
-    $content = (string)$note->content;
-    $tags = $note->tag;
+    if (!preg_match('/<title>(.*?)<\/title>/s', $selectedNote, $titleMatch)) {
+        $title = '';
+    } else {
+        $title = trim($titleMatch[1]);
+    }
+
+    if (!preg_match('/<content>(.*?)<\/content>/s', $selectedNote, $contentMatch)) {
+        $content = '';
+    } else {
+        $content = $contentMatch[1];
+    }
+
+    $tags = [];
+    preg_match_all('/<tag>(.*?)<\/tag>/s', $selectedNote, $tagMatches);
+    if (isset($tagMatches[1])) {
+        $tags = array_map('trim', $tagMatches[1]);
+    }
 
     // Extract only content inside <en-note>
     if (preg_match('/<en-note[^>]*>(.*?)<\/en-note>/is', $content, $matches)) {
@@ -159,7 +168,7 @@ function getNoteFromEnexById($filePath, $noteId) {
     $inNote = false;
     $noteBuffer = '';
     while (($line = fgets($handle)) !== false) {
-        if (strpos($line, '<note id=') !== false) {
+        if (strpos($line, '<note') !== false) {
             if (preg_match('/<note id="([^"]+)"/', $line, $matches)) {
                 $currentId = $matches[1];
                 if ($currentId == $noteId) {
@@ -171,18 +180,30 @@ function getNoteFromEnexById($filePath, $noteId) {
             $noteBuffer .= $line;
             if (strpos($line, '</note>') !== false) {
                 $inNote = false;
-                // parse it
-                $wrappedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><root>$noteBuffer</root>";
-                libxml_use_internal_errors(true);
-                $parsed = simplexml_load_string($wrappedXml);
-                if (!$parsed || !isset($parsed->note)) {
+                // parse it using regex
+                if (!preg_match('/<note id="([^"]+)"/', $noteBuffer, $idMatch)) {
                     return "Failed to parse selected note.";
                 }
-                $note = $parsed->note;
-                $id = (string)$note['id'];
-                $title = (string)$note->title;
-                $content = (string)$note->content;
-                $tags = $note->tag;
+                $id = $idMatch[1];
+
+                if (!preg_match('/<title>(.*?)<\/title>/s', $noteBuffer, $titleMatch)) {
+                    $title = '';
+                } else {
+                    $title = trim($titleMatch[1]);
+                }
+
+                if (!preg_match('/<content>(.*?)<\/content>/s', $noteBuffer, $contentMatch)) {
+                    $content = '';
+                } else {
+                    $content = $contentMatch[1];
+                }
+
+                $tags = [];
+                preg_match_all('/<tag>(.*?)<\/tag>/s', $noteBuffer, $tagMatches);
+                if (isset($tagMatches[1])) {
+                    $tags = array_map('trim', $tagMatches[1]);
+                }
+
                 if (preg_match('/<en-note[^>]*>(.*?)<\/en-note>/is', $content, $matches)) {
                     $cleanContent = $matches[1];
                 } else {
