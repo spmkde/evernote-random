@@ -31,7 +31,7 @@ function addNoteToENEX($enexFile, $title, $content, $tags = NULL) {
     // Create the note XML structure
     $noteXml = <<<XML
   <note>
-    <title><![CDATA[{$title}]]></title>
+    <title>{$title}</title>
     <created>{$created}</created>
     <updated>{$updated}</updated>
     <note-attributes>
