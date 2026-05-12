@@ -304,7 +304,7 @@ $time_elapsed = microtime(true) - $time_start;
         <div class="note-content">
             <?php echo $note['content']; ?>
         </div>
-        <p><a href="?id=<?php echo urlencode($note['id']); ?>">Direct link to this note</a></p>
+        <p><a href="note.php?id=<?php echo urlencode($note['id']); ?>">Direct link to this note</a></p>
     <?php else: ?>
         <p style="color:red;"><?php echo htmlspecialchars($note); ?></p>
     <?php endif; ?>
