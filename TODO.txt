@@ -1,3 +1,2 @@
 * Calculate and add ID upon add (add.php)
 * Create snippet to fix note headers (Unbekannte Notiz, <100)
-* Search and replace CDATA in titles
