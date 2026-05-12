@@ -140,11 +140,6 @@ $time_elapsed = microtime(true) - $time_start;
     <?php endif; ?>
 
     <hr/>
-
-    <div style="text-align: center; font-size: 0.7em;">
-        <a href="https://github.com/spmkde/evernote-random/">Source code and bug tracker @ github.com</a>
-    </div>
-
     </div>
 </body>
 </html>
