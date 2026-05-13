@@ -58,6 +58,17 @@ function getNoteFromEnexById($filePath, $noteId) {
                     $tags = array_map('trim', $tagMatches[1]);
                 }
 
+                $author = null;
+                foreach ($tags as $tag) {
+                    if (strpos($tag, 'Autor:') === 0) {
+                        $author = trim(substr($tag, strlen('Autor:')));
+                        if ($author === '') {
+                            $author = null;
+                        }
+                        break;
+                    }
+                }
+
                 if (preg_match('/<en-note[^>]*>(.*?)<\/en-note>/is', $content, $matches)) {
                     $cleanContent = $matches[1];
                 } else {
@@ -68,7 +79,8 @@ function getNoteFromEnexById($filePath, $noteId) {
                     'id' => $id,
                     'title' => $title,
                     'content' => $cleanContent,
-                    'tags' => $tags
+                    'tags' => $tags,
+                    'author' => $author
                 ];
             }
         }
@@ -134,6 +146,11 @@ $time_elapsed = microtime(true) - $time_start;
         <div class="note-content">
             <?php echo $note['content']; ?>
         </div>
+        <?php if (!empty($note['author'])): ?>
+            <div class="note-author" style="text-align:right; margin-top: 1em; margin-right: 1em;">
+                <?php echo htmlspecialchars($note['author']); ?>
+            </div>
+        <?php endif; ?>
     <?php else: ?>
         <p style="color:red;"><?php echo htmlspecialchars($note); ?></p>
     <?php endif; ?>
