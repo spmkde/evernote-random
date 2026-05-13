@@ -156,11 +156,11 @@ $time_elapsed = microtime(true) - $time_start;
         </div>
         <?php if (!empty($note['author'])): ?>
             <div class="note-author" style="text-align:right; margin-top: 1em; margin-right: 1em;">
-                <?php echo htmlspecialchars($note['author']); ?>
+                <?php echo "<a href='random.php?t=Autor:+" . urlencode($note['author']) . "'>" . htmlspecialchars($note['author']) . "</a>"; ?>
         <?php endif; ?>
 
         <?php if (!empty($note['book'])): ?>
-                <?php echo "- " . htmlspecialchars($note['book']); ?>
+                <?php echo "- " . "<a href='random.php?t=Buch:+" . urlencode($note['book']) . "'>" . htmlspecialchars($note['book']) . "</a>"; ?>
 
             </div>
         <?php endif; ?>
