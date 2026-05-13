@@ -131,7 +131,6 @@ $time_elapsed = microtime(true) - $time_start;
     <h1><a href="random.php?">Random Evernote Note</a></h1>
     <hr/>
     <?php if (is_array($note)): ?>
-        <h2><?php echo htmlspecialchars($note['title']); ?></h2>
         <div class="note-content">
             <?php echo $note['content']; ?>
         </div>
