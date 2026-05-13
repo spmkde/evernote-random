@@ -89,7 +89,7 @@ try {
         echo "<div class='note-header'><h3>{$match['title']}</h3></div>";
         echo "<div class='note-content'>";
         echo trim($match['content']);
-        echo "<a href='random.php?id=" . urlencode($match['id']) . "'>Direct link to this note</a>";        
+        echo "<a href='note.php?id=" . urlencode($match['id']) . "'>Direct link to this note</a>";        
         echo "</div>";
         echo "<br/>";
     }
