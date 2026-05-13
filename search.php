@@ -53,13 +53,26 @@ if (!isset($_GET['s'])) {
 
 // Usage example
 try {
-    $matches = searchEnexFile('Quotes.enex', $_GET['s']);
+    $searchTerm = $_GET['s'];
+    $matches = [];
+    $enexFiles = glob('*.enex');
+
+    if (empty($enexFiles)) {
+        throw new Exception('No ENEX files found');
+    }
+
+    foreach ($enexFiles as $enexFile) {
+        if ($enexFile == "sandbox.enex") {
+            continue; // Skip sandbox file
+        }
+        $matches = array_merge($matches, searchEnexFile($enexFile, $searchTerm));
+    }
     
     echo '<div style="text-align: center">';
     echo '<h1><a href="random.php">Random Evernote Note</a> </h1><br/><hr/>';
     
 
-    echo "<h2>Found " . count($matches) . " matches for '" . $_GET['s'] . "'</h2>";
+    echo "<h2>Found " . count($matches) . " matches for '" . htmlspecialchars($searchTerm, ENT_QUOTES, 'UTF-8') . "'</h2>";
 
          echo '<form action="search.php" method="GET">';
          echo '<input type="text" id="search" name="s" required> ';
