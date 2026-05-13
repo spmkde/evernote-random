@@ -59,12 +59,20 @@ function getNoteFromEnexById($filePath, $noteId) {
                 }
 
                 $author = null;
+                $book = null;
+
                 foreach ($tags as $tag) {
                     if (strpos($tag, 'Autor:') === 0) {
                         $author = trim(substr($tag, strlen('Autor:')));
+                        if ($author === '') {
+                            $author = null;
+                        }
                     }
                     if (strpos($tag, 'Buch:') === 0) {
                         $book = trim(substr($tag, strlen('Buch:')));
+                        if ($book === '') {
+                            $book = null;
+                        }
                     }
                 }
 
@@ -149,10 +157,15 @@ $time_elapsed = microtime(true) - $time_start;
         <?php if (!empty($note['author'])): ?>
             <div class="note-author" style="text-align:right; margin-top: 1em; margin-right: 1em;">
                 <?php echo htmlspecialchars($note['author']); ?>
-                -
-                <?php echo htmlspecialchars($note['book']); ?>
+        <?php endif; ?>
+
+        <?php if (!empty($note['book'])): ?>
+                <?php echo "- " . htmlspecialchars($note['book']); ?>
+
             </div>
         <?php endif; ?>
+
+
     <?php else: ?>
         <p style="color:red;"><?php echo htmlspecialchars($note); ?></p>
     <?php endif; ?>
