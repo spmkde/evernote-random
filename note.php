@@ -151,20 +151,31 @@ $time_elapsed = microtime(true) - $time_start;
     <h1><a href="random.php?">Random Evernote Note</a></h1>
     <hr/>
     <?php if (is_array($note)): ?>
+        <?php
+        $content = $note['content'];
+        $extracted = '';
+
+        # Extract Bible verses or similar notes that are formatted as "-- Verse" within a div
+        if (preg_match('/(<div[^>]*>)\s*--\s*(.*?)<\/div>/is', $content, $matches)) {
+            $extracted = $matches[0];
+            $content = str_replace($extracted, '', $content);
+            $extracted = str_replace("-- ", "", $extracted);
+        }
+        ?>
         <div class="note-content">
-            <?php echo $note['content']; ?>
+            <?php echo $content; ?>
         </div>
-        <?php if (!empty($note['author'])): ?>
-            <div class="note-author" style="text-align:right; margin-top: 1em; margin-right: 1em;">
-                <?php echo "<a href='random.php?t=Autor:+" . urlencode($note['author']) . "'>" . htmlspecialchars($note['author']) . "</a>"; ?>
-        <?php endif; ?>
+        <div class="note-author" style="text-align:right; margin-top: 1em; margin-right: 1em;">
+            <?php if (!empty($note['author'])): ?>
+                    <?php echo "<a href='random.php?t=Autor:+" . urlencode($note['author']) . "'>" . htmlspecialchars($note['author']) . "</a>"; ?>
+            <?php endif; ?>
 
-        <?php if (!empty($note['book'])): ?>
-                <?php echo "- " . "<a href='random.php?t=Buch:+" . urlencode($note['book']) . "'>" . htmlspecialchars($note['book']) . "</a>"; ?>
-
-            </div>
-        <?php endif; ?>
-
+            <?php if (!empty($extracted)): ?>
+                    <?php echo $extracted; ?>
+            <?php elseif (!empty($note['book'])): ?>
+                    <?php echo "- " . "<a href='random.php?t=Buch:+" . urlencode($note['book']) . "'>" . htmlspecialchars($note['book']) . "</a>"; ?>
+            <?php endif; ?>
+        </div>
 
     <?php else: ?>
         <p style="color:red;"><?php echo htmlspecialchars($note); ?></p>
