@@ -5,6 +5,7 @@ $nr_notes_scanned = 0;
 $nr_tags_found = NULL;
 
 $DAILY_QUOTA = FALSE; // Set to a positive integer to enable daily request quota, or FALSE to disable.
+$DISPLAY_TITLE = FALSE; // Display note header
 
 if ($DAILY_QUOTA) {
     $quota_cookie_name = 'daily_request_quota';
@@ -300,7 +301,7 @@ $time_elapsed = microtime(true) - $time_start;
     ?></h1>
     <hr/>
     <?php if (is_array($note)): ?>
-        <h2><?php echo htmlspecialchars($note['title']); ?></h2>
+        <?php if ($DISPLAY_TITLE) { echo "<h2>" . htmlspecialchars($note['title']) . "</h2>"; } ?>
         <div class="note-content">
             <?php echo $note['content']; ?>
         </div>
