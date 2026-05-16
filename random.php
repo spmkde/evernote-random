@@ -301,7 +301,7 @@ $time_elapsed = microtime(true) - $time_start;
     ?></h1>
     <hr/>
     <?php if (is_array($note)): ?>
-        <?php if ($DISPLAY_TITLE) { echo "<h2>" . htmlspecialchars($note['title']) . "</h2>"; ?>
+        <?php if ($DISPLAY_TITLE) { echo "<h2>" . htmlspecialchars($note['title']) . "</h2>"; } ?>
         <div class="note-content">
             <?php echo $note['content']; ?>
         </div>
