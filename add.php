@@ -128,6 +128,29 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
             font-size:1em;
             margin: 5px;
         }
+
+        .autocomplete { position: relative; display: inline-block; width: auto; max-width: 400px; }
+        .autocomplete input { width: 100%; min-width: 250px; }
+        .suggestion-list {
+          position: absolute;
+          top: calc(100% + 0.25rem);
+          left: 0;
+          right: 0;
+          border: 1px solid #ccc;
+          background: #fff;
+          max-height: 220px;
+          overflow-y: auto;
+          box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+          z-index: 10;
+        }
+        .suggestion-item {
+          padding: 0.5rem;
+          cursor: pointer;
+        }
+        .suggestion-item:hover {
+          background: #f0f0f0;
+        }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
@@ -154,11 +177,95 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
             } ?>
         </select>
         <br/>
-        Add tags:<input type="text" name="tags" id="tags"><br/> 
+        <label for="tags" style="display:inline-block; margin-right:0.5rem; vertical-align:middle;">Add tags:</label>
+        <div class="autocomplete" style="display:inline-block; vertical-align:middle;">
+            <input type="text" name="tags" id="tags" placeholder="tag1, tag2, ...">
+            <div id="tagSuggestions" class="suggestion-list hidden"></div>
+        </div>
+        <br/>
         <input type="submit" value="Add note">
     </form>
 
     <?php } ?>
+
+    <script>
+      const tagInput = document.getElementById('tags');
+      if (tagInput) {
+        const suggestions = document.getElementById('tagSuggestions');
+        let tags = [];
+
+        fetch('taglist.txt')
+          .then(response => response.text())
+          .then(text => {
+            tags = text
+              .split(/\r?\n/)
+              .map(line => line.trim())
+              .filter(line => line.length > 0);
+          })
+          .catch(err => {
+            console.error('Failed to load taglist.txt', err);
+          });
+
+        function renderSuggestions(list) {
+          if (!list.length) {
+            suggestions.classList.add('hidden');
+            suggestions.innerHTML = '';
+            return;
+          }
+
+          suggestions.innerHTML = list
+            .map(tag => `<div class="suggestion-item" data-tag="${tag}">${tag}</div>`)
+            .join('');
+          suggestions.classList.remove('hidden');
+        }
+
+        function getCurrentTerm(value) {
+          const lastComma = value.lastIndexOf(',');
+          if (lastComma === -1) {
+            return { prefix: '', term: value.trim() };
+          }
+          return {
+            prefix: value.slice(0, lastComma + 1),
+            term: value.slice(lastComma + 1).trim()
+          };
+        }
+
+        function updateSuggestions() {
+          const { term } = getCurrentTerm(tagInput.value);
+          if (!term) {
+            renderSuggestions(tags.slice(0, 50));
+            return;
+          }
+
+          const filtered = tags
+            .filter(tag => tag.toLowerCase().includes(term.toLowerCase()))
+            .slice(0, 50);
+
+          renderSuggestions(filtered);
+        }
+
+        function applyTag(tag) {
+          const { prefix } = getCurrentTerm(tagInput.value);
+          tagInput.value = `${prefix} ${tag}`.trimStart();
+          suggestions.classList.add('hidden');
+          tagInput.focus();
+          tagInput.setSelectionRange(tagInput.value.length, tagInput.value.length);
+        }
+
+        tagInput.addEventListener('input', updateSuggestions);
+        tagInput.addEventListener('focus', updateSuggestions);
+        tagInput.addEventListener('blur', () => {
+          setTimeout(() => suggestions.classList.add('hidden'), 150);
+        });
+
+        suggestions.addEventListener('mousedown', event => {
+          const item = event.target.closest('.suggestion-item');
+          if (!item) return;
+          event.preventDefault();
+          applyTag(item.dataset.tag);
+        });
+      }
+    </script>
 
     <hr/>
 
