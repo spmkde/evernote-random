@@ -150,6 +150,9 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
         .suggestion-item:hover {
           background: #f0f0f0;
         }
+        .suggestion-item.selected {
+          background: #e6f0ff;
+        }
         .hidden { display: none; }
     </style>
 </head>
@@ -193,6 +196,8 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
       if (tagInput) {
         const suggestions = document.getElementById('tagSuggestions');
         let tags = [];
+        let currentList = [];
+        let selectedIndex = -1;
 
         fetch('taglist.txt')
           .then(response => response.text())
@@ -207,16 +212,20 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
           });
 
         function renderSuggestions(list) {
+          currentList = list;
           if (!list.length) {
             suggestions.classList.add('hidden');
             suggestions.innerHTML = '';
+            selectedIndex = -1;
             return;
           }
 
           suggestions.innerHTML = list
-            .map(tag => `<div class="suggestion-item" data-tag="${tag}">${tag}</div>`)
+            .map((tag, i) => `<div class="suggestion-item" data-tag="${tag}" data-index="${i}">${tag}</div>`)
             .join('');
           suggestions.classList.remove('hidden');
+          if (selectedIndex >= currentList.length) selectedIndex = currentList.length - 1;
+          updateHighlight();
         }
 
         function getCurrentTerm(value) {
@@ -250,12 +259,54 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
           suggestions.classList.add('hidden');
           tagInput.focus();
           tagInput.setSelectionRange(tagInput.value.length, tagInput.value.length);
+          selectedIndex = -1;
         }
 
-        tagInput.addEventListener('input', updateSuggestions);
-        tagInput.addEventListener('focus', updateSuggestions);
+        function updateHighlight() {
+          const items = suggestions.querySelectorAll('.suggestion-item');
+          items.forEach((el, idx) => {
+            if (idx === selectedIndex) el.classList.add('selected'); else el.classList.remove('selected');
+          });
+          const el = items[selectedIndex];
+          if (el) el.scrollIntoView({ block: 'nearest' });
+        }
+
+        function moveSelection(delta) {
+          if (!currentList.length) return;
+          if (selectedIndex === -1) {
+            selectedIndex = delta > 0 ? 0 : currentList.length - 1;
+          } else {
+            selectedIndex = (selectedIndex + delta + currentList.length) % currentList.length;
+          }
+          updateHighlight();
+        }
+
+        tagInput.addEventListener('input', () => { selectedIndex = -1; updateSuggestions(); });
+        tagInput.addEventListener('focus', () => { selectedIndex = -1; updateSuggestions(); });
         tagInput.addEventListener('blur', () => {
           setTimeout(() => suggestions.classList.add('hidden'), 150);
+        });
+
+        tagInput.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            moveSelection(1);
+          } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            moveSelection(-1);
+          } else if (e.key === 'Enter') {
+            if (!suggestions.classList.contains('hidden') && selectedIndex >= 0) {
+              e.preventDefault();
+              applyTag(currentList[selectedIndex]);
+            }
+          } else if (e.key === 'Escape') {
+            suggestions.classList.add('hidden');
+          } else if (e.key === 'Tab') {
+            if (!suggestions.classList.contains('hidden') && selectedIndex >= 0) {
+              e.preventDefault();
+              applyTag(currentList[selectedIndex]);
+            }
+          }
         });
 
         suggestions.addEventListener('mousedown', event => {
@@ -263,6 +314,16 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
           if (!item) return;
           event.preventDefault();
           applyTag(item.dataset.tag);
+        });
+
+        suggestions.addEventListener('mousemove', event => {
+          const item = event.target.closest('.suggestion-item');
+          if (!item) return;
+          const idx = parseInt(item.dataset.index, 10);
+          if (!isNaN(idx) && idx !== selectedIndex) {
+            selectedIndex = idx;
+            updateHighlight();
+          }
         });
       }
     </script>

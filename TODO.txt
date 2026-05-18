@@ -1,3 +1,5 @@
 * Calculate and add ID upon add (add.php)
-* Create snippet to fix note headers (<100)
 * *.enex: Fix Author -> Autor
+* add.php: add button to gen-taglist.php
+* note.php: add link to quotescover.com
+  https://quotescover.com/pro-version/api/?theq=Reflect+on+how+God+may+be+shaping+your+hardships+as+preparation%2C+not+destruction.&thea=Let+God
