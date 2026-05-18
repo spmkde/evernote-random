@@ -4,6 +4,8 @@ $time_start = microtime(true);
 $nr_notes_scanned = 0;
 $nr_tags_found = NULL;
 
+$ENABLE_QC_LINK = FALSE;
+
 function getNoteById($noteId) {
     global $enex_files;
     foreach ($enex_files as $enex_file) {
@@ -182,6 +184,27 @@ $time_elapsed = microtime(true) - $time_start;
     <?php endif; ?>
 
     <hr/>
+
+    <div style="text-align: center; margin: 1rem 0;">
+        <button id="copyUrlButton">Copy current URL</button>
     </div>
+
+    <?php if ($ENABLE_QC_LINK && is_array($note)): ?>
+        <p><a href="qc.php?id=<?php echo urlencode($note['id']); ?>">Edit in Quick Capture</a></p>
+    <?php endif; ?>
+    </div>
+    <script>
+        const copyUrlButton = document.getElementById('copyUrlButton');
+        if (copyUrlButton) {
+            copyUrlButton.addEventListener('click', async () => {
+                try {
+                    await navigator.clipboard.writeText(window.location.href);
+                } catch (err) {
+                    console.error('Clipboard write failed', err);
+                    alert('Failed to copy URL to clipboard');
+                }
+            });
+        }
+    </script>
 </body>
 </html>
