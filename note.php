@@ -4,7 +4,7 @@ $time_start = microtime(true);
 $nr_notes_scanned = 0;
 $nr_tags_found = NULL;
 
-$ENABLE_QC_LINK = FALSE;
+$ENABLE_QC_LINK = TRUE;
 
 function getNoteById($noteId) {
     global $enex_files;
@@ -187,22 +187,73 @@ $time_elapsed = microtime(true) - $time_start;
 
     <div style="text-align: center; margin: 1rem 0;">
         <button id="copyUrlButton">Copy current URL</button>
-    </div>
 
     <?php if ($ENABLE_QC_LINK && is_array($note)): ?>
-        <p><a href="qc.php?id=<?php echo urlencode($note['id']); ?>">Edit in Quick Capture</a></p>
+
+        <button id="externalLinkButton" style="margin-left: 0.75rem;">Send note to QuotesCover</button>
     <?php endif; ?>
+    </div>
+
     </div>
     <script>
         const copyUrlButton = document.getElementById('copyUrlButton');
+        const externalLinkButton = document.getElementById('externalLinkButton');
+        const noteContent = <?php echo json_encode(is_array($note) ? $content : ''); ?>;
+        const noteAuthor = <?php echo json_encode(is_array($note) ? $note['author'] : ''); ?>;
+        const externalBaseUrl = 'https://quotescover.com/pro-version/api/';
+
+        function fallbackCopyTextToClipboard(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.setAttribute('readonly', '');
+            textArea.style.position = 'fixed';
+            textArea.style.top = 0;
+            textArea.style.left = 0;
+            textArea.style.opacity = 0;
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+
+            let successful = false;
+            try {
+                successful = document.execCommand('copy');
+            } catch (err) {
+                successful = false;
+            }
+            document.body.removeChild(textArea);
+            return successful;
+        }
+
         if (copyUrlButton) {
             copyUrlButton.addEventListener('click', async () => {
-                try {
-                    await navigator.clipboard.writeText(window.location.href);
-                } catch (err) {
-                    console.error('Clipboard write failed', err);
-                    alert('Failed to copy URL to clipboard');
+                const text = window.location.href;
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    try {
+                        await navigator.clipboard.writeText(text);
+                        alert('URL copied to clipboard');
+                        return;
+                    } catch (err) {
+                        console.warn('navigator.clipboard.writeText failed', err);
+                    }
                 }
+
+                if (fallbackCopyTextToClipboard(text)) {
+                    alert('URL copied to clipboard');
+                } else {
+                    alert('Clipboard access is not available in this browser. Please copy the URL manually.');
+                }
+            });
+        }
+
+        function stripHtmlTags(html) {
+            return html.replace(/<[^>]*>/g, '');
+        }
+
+        if (externalLinkButton) {
+            externalLinkButton.addEventListener('click', () => {
+                const plainContent = stripHtmlTags(noteContent);
+                const url = externalBaseUrl + '?theq=' + encodeURIComponent(plainContent) + '&thea=' + encodeURIComponent(noteAuthor);
+                window.open(url, '_blank');
             });
         }
     </script>
