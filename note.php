@@ -186,7 +186,7 @@ $time_elapsed = microtime(true) - $time_start;
     <hr/>
 
     <div style="text-align: center; margin: 1rem 0;">
-        <button id="copyUrlButton">Copy current URL</button>
+        <button id="copyUrlButton" style="margin-bottom: 10px">Copy current URL</button>
 
     <?php if ($ENABLE_QC_LINK && is_array($note)): ?>
 
