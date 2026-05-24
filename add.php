@@ -27,10 +27,12 @@ function addNoteToENEX($enexFile, $title, $content, $tags = NULL) {
     // Default timestamps if not provided
     $created = gmdate('Ymd\THis\Z');
     $updated = gmdate('Ymd\THis\Z');
+
+    $uuid = sha1($content);
     
     // Create the note XML structure
     $noteXml = <<<XML
-  <note>
+<note id="{$uuid}">
     <title>{$title}</title>
     <created>{$created}</created>
     <updated>{$updated}</updated>
