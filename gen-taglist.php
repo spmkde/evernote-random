@@ -3,6 +3,7 @@
 $tags = [];
 
 foreach (glob('*.enex') as $enexFile) {
+    echo "Parsing tags from $enexFile";
     $dom = new DOMDocument();
     libxml_use_internal_errors(true);
     if (!$dom->load($enexFile)) {
