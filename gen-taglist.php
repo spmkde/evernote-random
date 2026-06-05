@@ -6,6 +6,10 @@ foreach (glob('*.enex') as $enexFile) {
     $dom = new DOMDocument();
     libxml_use_internal_errors(true);
     if (!$dom->load($enexFile)) {
+        echo "Error loading XML file $enexFile";
+        foreach(libxml_get_errors() as $error) {
+           echo "\t", $error->message;
+        }
         libxml_clear_errors();
         continue;
     }
