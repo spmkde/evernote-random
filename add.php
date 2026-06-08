@@ -169,6 +169,8 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
 
     <br/><br/>
     <button onclick="window.location.href = 'add.php';">Add another note.</button>
+    <button onclick="window.location.href = 'gen-taglist.php';">Update tag list.</button>
+    <button onclick="window.location.href = 'taglist.txt';">View taglist.</button>
 
 
     <?php } else { ?>
