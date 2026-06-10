@@ -190,8 +190,8 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
         <input type="submit" value="Add note">
     </form>
     <br/>
+        <hr/>
     <button onclick="window.location.href = 'gen-taglist.php';">Update tag list.</button>
-        <br/>
     <button onclick="window.location.href = 'taglist.txt';">View taglist.</button>
     <?php } ?>
 
