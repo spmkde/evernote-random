@@ -6,10 +6,15 @@ $time_start = microtime(true);
 function searchEnexFile($enexPath, $searchTerm) {
     // Load the ENEX file
     $xml = simplexml_load_file($enexPath);
+    libxml_use_internal_errors(true);
     
     if ($xml === false) {
-        throw new Exception("Failed to load ENEX file");
-    }   
+        echo "Error loading XML file $enexPath";
+        foreach(libxml_get_errors() as $error) {
+           echo "\t", $error->message;
+        }
+        return FALSE;
+    }
     
     $results = [];
     

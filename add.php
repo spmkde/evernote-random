@@ -27,10 +27,12 @@ function addNoteToENEX($enexFile, $title, $content, $tags = NULL) {
     // Default timestamps if not provided
     $created = gmdate('Ymd\THis\Z');
     $updated = gmdate('Ymd\THis\Z');
+
+    $uuid = sha1($content);
     
     // Create the note XML structure
     $noteXml = <<<XML
-  <note>
+<note id="{$uuid}">
     <title>{$title}</title>
     <created>{$created}</created>
     <updated>{$updated}</updated>
@@ -168,7 +170,6 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
     <br/><br/>
     <button onclick="window.location.href = 'add.php';">Add another note.</button>
 
-
     <?php } else { ?>
 
     <form action="add.php" method="POST" id="newnote">
@@ -188,7 +189,10 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
         <br/>
         <input type="submit" value="Add note">
     </form>
-
+    <br/>
+        <hr/>
+    <button onclick="window.location.href = 'gen-taglist.php';">Update tag list.</button>
+    <button onclick="window.location.href = 'taglist.txt';">View taglist.</button>
     <?php } ?>
 
     <script>
