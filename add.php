@@ -255,7 +255,7 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
 
         function applyTag(tag) {
           const { prefix } = getCurrentTerm(tagInput.value);
-          tagInput.value = `${prefix} ${tag}`.trimStart();
+          tagInput.value = `${prefix} ${tag}, `.trimStart();
           suggestions.classList.add('hidden');
           tagInput.focus();
           tagInput.setSelectionRange(tagInput.value.length, tagInput.value.length);
