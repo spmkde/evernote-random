@@ -297,7 +297,8 @@ $time_elapsed = microtime(true) - $time_start;
     <div class="container">
     <h1><a href="?">Random Evernote Note</a> - <?php
         printf("<a href='%s'>%s</a>", $scope_link, $scope);
-        if ($nr_tags_found !== NULL) { echo " (1 / $nr_tags_found)"; }
+        # FIXME: when no tag is specified, this is triggered nevertheless
+        #if ($nr_tags_found !== NULL) { echo " (1 / $nr_tags_found)"; }
     ?></h1>
     <hr/>
     <?php if (is_array($note)): ?>
