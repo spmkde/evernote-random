@@ -8,6 +8,30 @@ if (!function_exists('str_contains')) {
     }
 }
 
+function normalize_utf8($value) {
+    if ($value === null) {
+        return '';
+    }
+
+    $value = (string) $value;
+
+    if (function_exists('mb_check_encoding') && !mb_check_encoding($value, 'UTF-8')) {
+        if (function_exists('iconv')) {
+            $value = @iconv('UTF-8', 'UTF-8//IGNORE', $value);
+        }
+
+        if (function_exists('mb_check_encoding') && !mb_check_encoding($value, 'UTF-8')) {
+            $value = @mb_convert_encoding($value, 'UTF-8', 'UTF-8, ISO-8859-1, Windows-1252');
+        }
+    }
+
+    return $value;
+}
+
+function xml_safe_text($value) {
+    return htmlspecialchars(normalize_utf8($value), ENT_QUOTES | ENT_XML1, 'UTF-8');
+}
+
 function get_enex_files() {
     $file_filter = (isset($_GET['f'])) ? $_GET['f'] : "enex";
     $files = scandir(__DIR__);
@@ -23,17 +47,22 @@ function get_enex_files() {
 $enex_files = get_enex_files();
 
 function addNoteToENEX($enexFile, $title, $content, $tags = NULL) {
- 
     // Default timestamps if not provided
     $created = gmdate('Ymd\THis\Z');
     $updated = gmdate('Ymd\THis\Z');
 
+    $title = normalize_utf8(trim((string) $title));
+    $content = normalize_utf8((string) $content);
+    $tags = is_array($tags) ? $tags : [];
+
+    $safeTitle = xml_safe_text(substr($title, 0, 100));
+    $safeContent = htmlspecialchars($content, ENT_QUOTES | ENT_XML1, 'UTF-8');
+
     $uuid = sha1($content);
-    
-    // Create the note XML structure
+
     $noteXml = <<<XML
 <note id="{$uuid}">
-    <title>{$title}</title>
+    <title>{$safeTitle}</title>
     <created>{$created}</created>
     <updated>{$updated}</updated>
     <note-attributes>
@@ -42,23 +71,26 @@ function addNoteToENEX($enexFile, $title, $content, $tags = NULL) {
 XML;
 
     foreach ($tags as $tag) {
-        $noteXml .= "<tag>$tag</tag>\n";
+        $tagText = xml_safe_text(trim((string) $tag));
+        if ($tagText !== '') {
+            $noteXml .= "<tag>{$tagText}</tag>\n";
+        }
     }
 
     $noteXml .= <<<XML
 
     <content><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE en-note SYSTEM "http://xml.evernote.com/pub/enml2.dtd">
-<en-note>{$content}</en-note>
+<en-note>{$safeContent}</en-note>
 ]]></content>
   </note>
 XML;
-    
+
     // Read existing ENEX file
     $existingContent = '';
     if (file_exists($enexFile)) {
         $existingContent = file_get_contents($enexFile);
-        
+
         // Remove the closing </en-export> tag temporarily
         $existingContent = preg_replace('/\s*<\/en-export>\s*$/', '', $existingContent);
     } else {
@@ -67,20 +99,20 @@ XML;
 <!DOCTYPE en-export SYSTEM "http://xml.evernote.com/pub/enex-1.0.dtd">
 <en-export export-date="' . gmdate('Ymd\THis\Z') . '" application="Evernote" version="13.0">';
     }
-    
+
     // Append the new note and close the export tag
     $newContent = $existingContent . "\n" . $noteXml . "\n</en-export>";
-    
+
     // Write back to file
     if (file_put_contents($enexFile, $newContent) !== false) {
         return true;
     }
-    
+
     return false;
 }
 
 $post_success = FALSE;
-if ($_SERVER["REQUEST_METHOD"] === 'POST') {
+if (isset($_SERVER["REQUEST_METHOD"]) && $_SERVER["REQUEST_METHOD"] === 'POST') {
     
     $enex_path = isset($_POST['file']) ? trim($_POST['file']) : NULL;
     $note_text = isset($_POST['note']) ? trim($_POST['note']) : NULL;
@@ -96,7 +128,7 @@ if ($_SERVER["REQUEST_METHOD"] === 'POST') {
     $post_success = addNoteToENEX(
         $enex_path,
         substr($note_text, 0, 100),
-        "<div>$note_text</div>",
+        $note_text,
         $note_tags_clean
     );
 
