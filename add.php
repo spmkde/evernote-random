@@ -54,6 +54,12 @@ function addNoteToENEX($enexFile, $title, $content, $tags = NULL) {
     $title = normalize_utf8(trim((string) $title));
     $content = normalize_utf8((string) $content);
     $tags = is_array($tags) ? $tags : [];
+    $tags = array_values(array_filter(array_map(static function ($tag) {
+        return trim((string) $tag);
+    }, $tags), static function ($tag) {
+        return $tag !== '';
+    }));
+    sort($tags, SORT_NATURAL | SORT_FLAG_CASE);
 
     $safeTitle = xml_safe_text(substr($title, 0, 100));
     $safeContent = htmlspecialchars($content, ENT_QUOTES | ENT_XML1, 'UTF-8');
@@ -71,7 +77,7 @@ function addNoteToENEX($enexFile, $title, $content, $tags = NULL) {
 XML;
 
     foreach ($tags as $tag) {
-        $tagText = xml_safe_text(trim((string) $tag));
+        $tagText = xml_safe_text($tag);
         if ($tagText !== '') {
             $noteXml .= "<tag>{$tagText}</tag>\n";
         }
